@@ -1,9 +1,10 @@
 import { format, formatDistanceToNow } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
-import { ChangeEvent, FormEvent, InvalidEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, InvalidEvent, useEffect, useState } from 'react';
+import api from '../services/api';
 
 import { Avatar } from './Avatar';
-import { Comment } from './Comment';
+import { Comment, CommentType } from './Comment';
 import styles from './Post.module.css';
 
 interface Author {
@@ -23,6 +24,7 @@ export interface PostType {
     author: Author;
     publishedAt: Date;
     content: Content[];
+    comments: CommentType[];
 }
 
 interface PostProps {
@@ -30,25 +32,49 @@ interface PostProps {
 }
 
 
+
 export function Post({ post }: PostProps) {
-    const [comments, setComments] = useState(['Post muito bacana, hein?!']);
+    const [comments, setComments] = useState<CommentType[]>([]);
     const [newCommentText, setNewCommentText] = useState('');
 
+    const formattedDate = new Date(post.publishedAt);
 
-    const publishedDateFormatted = format(post.publishedAt, "d 'de' LLLL 'ás' HH:mm'h'", {
+    const publishedDateFormatted = format(formattedDate, "d 'de' LLLL 'ás' HH:mm'h'", {
         locale: ptBR,
     })
 
-    const publishedDateRelativeToNow = formatDistanceToNow(post.publishedAt, {
+    const publishedDateRelativeToNow = formatDistanceToNow(formattedDate, {
         locale: ptBR,
         addSuffix: true
     })
 
-    function handleCreateNewComment(event: FormEvent) {
+    useEffect(() => {
+        getComments();
+    }, []);
+
+    async function getComments() {
+        const response = await api.get('/posts');
+        setComments(response.data.comments);
+    }
+
+    async function handleCreateNewComment(event: FormEvent, post: PostType) {
+        console.log(post);
         event.preventDefault();
-        setComments([...comments, newCommentText]);
+        
+        const bodyComments = {
+            id: comments.length + 1,
+            comment: newCommentText
+        }
+
+        post.comments.push(bodyComments);
+
+        
+       
+        await api.post('/posts', post);
 
         setNewCommentText('');
+
+        getComments();
     }
 
     function handleNewCommentChange(event: ChangeEvent<HTMLTextAreaElement>) {
@@ -60,12 +86,12 @@ export function Post({ post }: PostProps) {
         event.target.setCustomValidity('Esse campo é obrigatório!');
     }
 
-    function deleteComment(commentToDelete: string) {
+    function deleteComment(idCommentToDelete: number) {
         // imutabilidade -> as variáveis não sofrem mutação
         // é criado um novo espaço na memória
 
         const commentsWithoutDeletedOne = comments.filter(comment => {
-            return comment !== commentToDelete;
+            return comment.id !== idCommentToDelete;
         })
         setComments(commentsWithoutDeletedOne);
     }
@@ -85,7 +111,7 @@ export function Post({ post }: PostProps) {
                         </div>
                     </div>
 
-                    <time title={publishedDateFormatted} dateTime={post.publishedAt.toISOString()}>
+                    <time title={publishedDateFormatted} dateTime={formattedDate.toISOString()}>
                         {publishedDateRelativeToNow}
                     </time>
                 </header>
@@ -102,7 +128,7 @@ export function Post({ post }: PostProps) {
                     }
                 </div>
 
-                <form onSubmit={handleCreateNewComment} className={styles.commentForm}>
+                <form onSubmit={(event) => handleCreateNewComment(event, post)} className={styles.commentForm}>
                     <strong> Deixe seu feedback</strong>
                     <textarea
                         name="comment"
@@ -120,9 +146,9 @@ export function Post({ post }: PostProps) {
 
                 <div className={styles.commentList}>
                     {
-                        comments.map((comment) => {
+                        comments?.map((comment) => {
                             return <Comment
-                                key={comment}
+                                key={comment.id}
                                 content={comment}
                                 onDeleteComment={deleteComment}
                             />

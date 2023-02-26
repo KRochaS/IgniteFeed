@@ -3,16 +3,21 @@ import styles from './Comment.module.css';
 import { Avatar } from './Avatar';
 import { useState } from 'react';
 
+export interface CommentType {
+    id: number;
+    comment: string;
+}
+
 interface CommentProps {
-    content: string;
-    onDeleteComment: (comment: string) => void;
+    content: CommentType;
+    onDeleteComment: (idComment: number) => void;
 }
 
 export function Comment({ content, onDeleteComment }: CommentProps) {
     const [likeCount, setLikeCount] = useState(0);
 
     function handleDeleteComment() {
-        onDeleteComment(content);
+        onDeleteComment(content.id);
     }
 
 
@@ -48,7 +53,7 @@ export function Comment({ content, onDeleteComment }: CommentProps) {
                         </button>
                     </header>
                     <p>
-                        {content}
+                        {content.comment}
                     </p>
                 </div>
 
