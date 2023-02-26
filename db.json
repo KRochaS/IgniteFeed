@@ -24,15 +24,7 @@
       "comments": [
         {
           "id": 1,
-          "comment": "cool"
-        },
-        {
-          "id": 2,
-          "comment": "legal"
-        },
-        {
-          "id": 3,
-          "comment": "asas"
+          "comment": "Post muito bacana hein?!"
         }
       ],
       "publishedAt": "2023-02-21 17:12:00"
@@ -56,6 +48,12 @@
         {
           "type": "link",
           "content": "jane.design/doctorcare"
+        }
+      ],
+      "comments": [
+        {
+          "id": 1,
+          "comment": "Post legal"
         }
       ],
       "publishedAt": "2023-02-23 17:00:00"
