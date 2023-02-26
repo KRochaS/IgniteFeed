@@ -34,7 +34,7 @@ interface PostProps {
 
 
 export function Post({ post }: PostProps) {
-    const [comments, setComments] = useState<CommentType[]>([]);
+    const [comments, setComments] = useState<CommentType[]>(post.comments);
     const [newCommentText, setNewCommentText] = useState('');
 
     const formattedDate = new Date(post.publishedAt);
@@ -48,21 +48,13 @@ export function Post({ post }: PostProps) {
         addSuffix: true
     })
 
-    useEffect(() => {
-        getComments();
-    }, []);
-
-    async function getComments() {
-        const response = await api.get('/posts');
-        setComments(response.data.comments);
-    }
 
     async function handleCreateNewComment(event: FormEvent, post: PostType) {
         console.log(post);
         event.preventDefault();
         
         const bodyComments = {
-            id: comments.length + 1,
+            id: post.comments.length + 1,
             comment: newCommentText
         }
 
@@ -70,11 +62,10 @@ export function Post({ post }: PostProps) {
 
         
        
-        await api.post('/posts', post);
+        await api.put(`/posts/${post.id}`, post);
 
         setNewCommentText('');
 
-        getComments();
     }
 
     function handleNewCommentChange(event: ChangeEvent<HTMLTextAreaElement>) {
@@ -86,13 +77,22 @@ export function Post({ post }: PostProps) {
         event.target.setCustomValidity('Esse campo é obrigatório!');
     }
 
-    function deleteComment(idCommentToDelete: number) {
+    async function deleteComment(idCommentToDelete: number) {
         // imutabilidade -> as variáveis não sofrem mutação
         // é criado um novo espaço na memória
 
         const commentsWithoutDeletedOne = comments.filter(comment => {
             return comment.id !== idCommentToDelete;
         })
+
+        let postToRemoveComment = {...post};
+
+        postToRemoveComment.comments = commentsWithoutDeletedOne;
+
+        const postWithoutCommentDeleted = {...postToRemoveComment };
+
+        await api.put(`/posts/${post.id}`, postWithoutCommentDeleted);
+
         setComments(commentsWithoutDeletedOne);
     }
 
