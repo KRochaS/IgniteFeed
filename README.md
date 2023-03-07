@@ -26,7 +26,17 @@
   - estados </br>
   - imutabilidade </br>
   - hooks
+  
+  ### Projeto
+<p>
+  <img src="https://github.com/KRochaS/IgniteFeed/blob/master/.github/ignite-feed-projeto.png" width="900" >
+</p>
 
+### Funcionalidades 
+
+- [x] Comentar publicação
+- [x] Deletar comentário
+- [x] Curtir comentário
 
 ## :wrench: Rodar o projeto
 
