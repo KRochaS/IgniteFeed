@@ -7,7 +7,7 @@
 </p>
 
 <h4 align="center"> 
-	 Status: Finished :heavy_check_mark:
+	 Status: Finalizado :heavy_check_mark:
 </h4>
 
 <p align="center">	
