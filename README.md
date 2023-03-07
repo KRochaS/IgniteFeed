@@ -27,12 +27,12 @@
   - imutabilidade </br>
   - hooks
   
-  ### Projeto
+ ## Projeto
 <p>
   <img src="https://github.com/KRochaS/IgniteFeed/blob/master/.github/ignite-feed-projeto.png" width="900" >
 </p>
 
-### Funcionalidades 
+## Funcionalidades 
 
 - [x] Comentar publicação
 - [x] Deletar comentário
